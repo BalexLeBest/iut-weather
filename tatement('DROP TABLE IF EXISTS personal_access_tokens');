@@ -1,0 +1,13 @@
+[90m= [39m[34;4mIlluminate\Support\Collection[39;24m {#5096
+    [34mall[39m: [
+      "[32m0001_01_01_000000_create_users_table[39m",
+      "[32m0001_01_01_000001_create_cache_table[39m",
+      "[32m0001_01_01_000002_create_jobs_table[39m",
+      "[32m2024_09_11_142554_create_flights_table[39m",
+      "[32m2024_09_11_143236_create_places_table[39m",
+      "[32m2024_09_11_143245_create_place_user_table[39m",
+      "[32m2024_09_18_090951_create_user_cities_table[39m",
+      "[32m2024_10_14_081621_create_personal_access_tokens_table[39m",
+    ],
+  }
+

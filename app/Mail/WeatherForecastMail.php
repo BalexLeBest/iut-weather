@@ -1,7 +1,5 @@
 <?php
 
-// app/Mail/WeatherForecastMail.php
-
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
@@ -24,6 +22,6 @@ class WeatherForecastMail extends Mailable
     public function build()
     {
         return $this->subject("Prévisions météo pour {$this->city}")
-                    ->view('emails.weather_forecast');
+            ->view('emails.weather_forecast');
     }
 }

@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('weather:send-forecast-emails')->dailyAt('06:00');
+        // Exécuter la commande chaque lundi à 6h
+        $schedule->command('forecast:send')->weeklyOn(1, '6:00');
     }
 
     protected function commands()

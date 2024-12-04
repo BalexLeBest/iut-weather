@@ -32,7 +32,6 @@ class WeatherController extends Controller
         return view('weather.forecast', compact('forecast'));
     }
 
-    // Nouvelle méthode pour combiner la météo actuelle et les prévisions
     public function combined(Request $request)
     {
         $city = $request->input('city', 'Dijon');
@@ -40,5 +39,23 @@ class WeatherController extends Controller
         $forecast = $this->weatherService->getForecast($city);
 
         return view('weather.combined', compact('weather', 'forecast', 'city'));
+    }
+
+    // Méthode pour rechercher la météo d'une ville
+    public function search(Request $request)
+    {
+        // Valider que l'utilisateur a bien fourni une ville
+        $request->validate([
+            'city' => 'required|string|max:255',
+        ]);
+
+        // Récupérer le nom de la ville depuis la requête
+        $city = $request->input('city');
+
+        // Appeler le service pour obtenir les données météo de la ville
+        $weather = $this->weatherService->getCurrentWeather($city);
+
+        // Retourner la vue avec les données météo de la ville
+        return view('home', compact('weather'));
     }
 }

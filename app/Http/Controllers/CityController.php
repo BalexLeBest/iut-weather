@@ -64,22 +64,52 @@ class CityController extends Controller
         return redirect()->route('cities.index')->with('success', "{$city->city} est maintenant votre ville favorite !");
     }
 
-    // Méthode pour envoyer les prévisions par email
     public function sendForecast($cityId)
     {
-        $userId = Auth::id();  // Récupérer l'utilisateur connecté
+        $userId = Auth::id();
         $city = UserCity::where('id', $cityId)->where('user_id', $userId)->firstOrFail();
 
-        // Récupérer les prévisions météo pour cette ville
+        // Récupérer les prévisions et les formater
         $forecast = $this->weatherService->getForecast($city->city);
+        $formattedForecast = collect($forecast['list'])->map(function ($item) {
+            return [
+                'date' => $item['dt_txt'],
+                'temperature' => $item['main']['temp'],
+                'description' => $item['weather'][0]['description'],
+                'wind_speed' => $item['wind']['speed'],
+                'humidity' => $item['main']['humidity'],
+            ];
+        });
 
-        // Envoyer l'email avec les prévisions à l'utilisateur connecté
-        Mail::to(Auth::user()->email)->send(new WeatherForecastMail($forecast, $city->city));
+        // Envoyer l'email
+        Mail::to(Auth::user()->email)->send(new WeatherForecastMail($formattedForecast, $city->city));
+
+        // Mettre à jour l'état pour activer le bouton "Annuler"
+        $city->send_forecast = true;
+        $city->save();
 
         return redirect()->route('cities.index')->with('success', "Les prévisions météo pour {$city->city} ont été envoyées par email !");
     }
 
+    public function scheduleForecast($cityId)
+    {
+        $userCity = UserCity::where('id', $cityId)->where('user_id', Auth::id())->firstOrFail();
+        $userCity->send_forecast = true;
+        $userCity->send_forecast_email_scheduled = now()->addDays(7);
+        $userCity->save();
 
+        return redirect()->route('cities.index')->with('success', "Envoi des prévisions programmé pour {$userCity->city}.");
+    }
+
+    public function cancelForecast($cityId)
+    {
+        $userCity = UserCity::where('id', $cityId)->where('user_id', Auth::id())->firstOrFail();
+        $userCity->send_forecast = false;
+        $userCity->send_forecast_email_scheduled = null;
+        $userCity->save();
+
+        return redirect()->route('cities.index')->with('success', "L'envoi des prévisions pour {$userCity->city} a été annulé.");
+    }
 
     public function destroy($id)
     {

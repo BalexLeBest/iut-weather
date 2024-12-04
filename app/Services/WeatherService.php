@@ -55,6 +55,20 @@ class WeatherService
             ];
         }
 
-        return null;  // Gérer le cas où la ville n'est pas trouvée
+        return null;
+    }
+
+    public function getFormattedForecast($city)
+    {
+        $forecast = $this->getForecast($city); // Suppose que getForecast récupère les données brutes
+        return collect($forecast['list'])->map(function ($item) {
+            return [
+                'date' => $item['dt_txt'],
+                'temperature' => $item['main']['temp'],
+                'description' => $item['weather'][0]['description'],
+                'wind_speed' => $item['wind']['speed'],
+                'humidity' => $item['main']['humidity'],
+            ];
+        });
     }
 }

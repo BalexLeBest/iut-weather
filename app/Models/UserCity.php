@@ -14,6 +14,7 @@ class UserCity extends Model
         'city',
         'favorite',
         'send_forecast',
+        'send_forecast_email_scheduled',
     ];
 
     // Relation avec le modèle User
