@@ -13,9 +13,10 @@
             background-color: #2980b9;
             color: #333;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            justify-content: center;
+            min-height: 100vh;
             text-align: center;
         }
 
@@ -26,22 +27,51 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
             max-width: 400px;
             width: 90%;
+            margin-bottom: 20px;
         }
 
-        .content h1 {
+        h1 {
             color: #2980b9;
             font-size: 2em;
             margin-bottom: 20px;
         }
 
-        .content p {
+        p {
             font-size: 1.2em;
             margin: 10px 0;
             color: #333;
         }
 
+        form {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            flex: 1;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1abc9c;
+        }
+
         .back-button {
-            display: inline-block;
             margin-top: 20px;
             padding: 10px 20px;
             background-color: #3498db;
@@ -62,11 +92,16 @@
 </head>
 
 <body>
+    <form action="{{ route('weather.current') }}" method="GET">
+        <input type="text" name="city" placeholder="Enter city name" value="{{ old('city') }}">
+        <button type="submit">Search</button>
+    </form>
+
     <div class="content">
         <h1>Current Weather in {{ $weather['name'] }}</h1>
         <p>Temperature: {{ $weather['main']['temp'] }} °C</p>
         <p>Weather: {{ $weather['weather'][0]['description'] }}</p>
-        <a href="{{ url()->previous() }}" class="back-button">Retour</a>
+        <a href="{{ url()->previous() }}" class="back-button">Back</a>
     </div>
 </body>
 

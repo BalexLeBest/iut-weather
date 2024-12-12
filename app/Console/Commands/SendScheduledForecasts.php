@@ -11,7 +11,7 @@ use App\Mail\WeatherForecastMail;
 class SendScheduledForecasts extends Command
 {
     protected $signature = 'forecast:send';
-    protected $description = 'Envoie les prévisions météo programmées pour les utilisateurs';
+    protected $description = 'Sends scheduled weather forecast to users';
     protected $weatherService;
 
     public function __construct(WeatherService $weatherService)
@@ -30,7 +30,7 @@ class SendScheduledForecasts extends Command
             $forecast = $this->weatherService->getForecast($city->city);
             Mail::to($city->user->email)->send(new WeatherForecastMail($forecast, $city->city));
 
-            // Planifier le prochain envoi dans 7 jours
+            // Schedule next shipment in 7 days
             $city->forecast_email_scheduled = now()->addDays(7);
             $city->save();
         }

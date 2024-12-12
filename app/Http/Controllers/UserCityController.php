@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Auth;
 
 class UserCityController extends Controller
 {
-    // Afficher les villes de l'utilisateur
+    // Show user’s cities
     public function index()
     {
         $userCities = UserCity::where('user_id', Auth::id())->get();
         return response()->json($userCities);
     }
 
-    // Ajouter une ville à la liste de l'utilisateur
+    // Add a city to the user’s list
     public function store(Request $request)
     {
         $request->validate(['city' => 'required|string|max:255']);
@@ -28,7 +28,7 @@ class UserCityController extends Controller
         return response()->json(['message' => 'Ville ajoutée avec succès', 'city' => $city], 201);
     }
 
-    // Supprimer une ville
+    // remove a city
     public function destroy($place)
     {
         $userCity = UserCity::where('city', $place)->where('user_id', Auth::id())->firstOrFail();
@@ -37,15 +37,15 @@ class UserCityController extends Controller
         return response()->json(['message' => 'Ville supprimée avec succès']);
     }
 
-    // Marquer une ville comme favorite
+    // Mark a city as favorite
     public function setFavorite($place)
     {
         $userId = Auth::id();
 
-        // Supprimer l'ancienne ville favorite si elle existe
+        // Delete old favorite city if it exists
         UserCity::where('user_id', $userId)->where('favorite', true)->update(['favorite' => false]);
 
-        // Marquer la nouvelle ville comme favorite
+        // Mark new city as favorite
         $city = UserCity::where('city', $place)->where('user_id', $userId)->firstOrFail();
         $city->favorite = true;
         $city->save();
@@ -53,7 +53,7 @@ class UserCityController extends Controller
         return response()->json(['message' => "{$city->city} est maintenant votre ville favorite"]);
     }
 
-    // Activer/désactiver l'envoi des prévisions par mail
+    // Enable/disable sending of forecasts by email
     public function toggleSendForecast($place)
     {
         $userCity = UserCity::where('city', $place)->where('user_id', Auth::id())->firstOrFail();
@@ -61,7 +61,7 @@ class UserCityController extends Controller
         $userCity->send_forecast = !$userCity->send_forecast;
         $userCity->save();
 
-        $message = $userCity->send_forecast ? 'Envoi des prévisions activé' : 'Envoi des prévisions désactivé';
+        $message = $userCity->send_forecast ? 'Sending forecasts enabled' : 'Sending forecasts disabled';
 
         return response()->json(['message' => $message]);
     }

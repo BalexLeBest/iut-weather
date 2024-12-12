@@ -19,12 +19,12 @@ class HomeController extends Controller
     {
         $userId = Auth::id();
 
-        // Récupérer la ville favorite de l'utilisateur
+        // Retrieve the user’s favorite city
         $favoriteCity = UserCity::where('user_id', $userId)->where('favorite', true)->first();
 
         $forecast = null;
         if ($favoriteCity) {
-            // Récupérer les prévisions météo pour la ville favorite
+            // Get weather forecast for favorite city
             $forecast = $this->weatherService->getForecast($favoriteCity->city);
         }
         

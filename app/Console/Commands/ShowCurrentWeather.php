@@ -33,15 +33,15 @@ class ShowCurrentWeather extends Command
         $weather = $this->weatherService->getCurrentWeather($city);
 
         if(isset($weather['cod']) && $weather['cod'] != 200){
-            $this->error("Impossible de récupérer la météo pour {$city}. Veuillez vérifier le nom de la ville.");
+            $this->error("Unable to retrieve weather for {$city}. Please check the name of the city.");
             return 1;
         }
 
-        $this->info("Méteo courante pour {$city} : ");
-        $this->line("Température : {$weather['main']['temp']} °C");
+        $this->info("Common method for {$city} : ");
+        $this->line("Temperature : {$weather['main']['temp']} °C");
         $this->line("Description : {$weather['weather'][0]['description']}");
-        $this->line("Humidité : {$weather['main']['humidity']}%");
-        $this->line("Vitesse du vent : {$weather['wind']['speed']} m/s");
+        $this->line("Humidity : {$weather['main']['humidity']}%");
+        $this->line("Wind speed : {$weather['wind']['speed']} m/s");
 
         return 0;
     }

@@ -21,7 +21,7 @@ class WeatherForecastMail extends Mailable
 
     public function build()
     {
-        return $this->subject("Prévisions météo pour {$this->city}")
+        return $this->subject("Weather forecast for {$this->city}")
             ->view('emails.weather_forecast');
     }
 }

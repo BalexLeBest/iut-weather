@@ -1,5 +1,3 @@
-<!-- resources/views/weather/coordinates.blade.php -->
-
 <!DOCTYPE html>
 <html lang="fr">
 

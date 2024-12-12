@@ -18,20 +18,20 @@ class CityController extends Controller
         $this->weatherService = $weatherService;
     }
 
-    // Méthode pour afficher le formulaire d'ajout d'une ville
+    // Method to display the form for adding a city
     public function create()
     {
-        return view('cities.add');  // Assure-toi d'avoir la vue 'cities.add'
+        return view('cities.add');  // Make sure you have the 'cities.add' view
     }
 
-    // Méthode pour afficher les villes de l'utilisateur
+    // Method to display user’s cities
     public function index()
     {
         $userCities = UserCity::where('user_id', Auth::id())->get();
         return view('cities.index', compact('userCities'));
     }
 
-    // Méthode pour ajouter une nouvelle ville à la base de données
+    // Method to add a new city to the database
     public function store(Request $request)
     {
         $request->validate([
@@ -43,33 +43,43 @@ class CityController extends Controller
             'city' => $request->city,
         ]);
 
-        return redirect()->route('cities.index')->with('success', 'Ville ajoutée avec succès !');
+        return redirect()->route('cities.index')->with('success', 'City added successfully !');
     }
 
-    // Mettre une ville en favorie
+    // Putting a city in favor
     public function setFavorite($id)
     {
         $userId = Auth::id();
 
-        // Supprimer l'ancienne ville favorite si elle existe
-        UserCity::where('user_id', $userId)->where('favorite', true)->update(['favorite' => false]);
+        // Retrieve the city to modify
+        $city = UserCity::where('id', $id)->where('user_id', $userId)->firstOrFail();
 
-        // Marquer la nouvelle ville comme favorite
-        $city = UserCity::where('id', $id)->where('user_id', $userId)->first();
-        if ($city) {
-            $city->favorite = true;
+        // If it is already favorite, deactivate it
+        if ($city->favorite) {
+            $city->favorite = false; // 0
             $city->save();
+            return redirect()->route('cities.index')->with('success', "{$city->city} is no longer your favorite city!");
         }
 
-        return redirect()->route('cities.index')->with('success', "{$city->city} est maintenant votre ville favorite !");
+        // Otherwise, disable all other user’s favorite cities
+        UserCity::where('user_id', $userId)->where('favorite', true)->update(['favorite' => false]);
+
+        // Mark current city as favorite
+        $city->favorite = true; // 1
+        $city->save();
+
+        return redirect()->route('cities.index')->with('success', "{$city->city} is now your favorite city!");
     }
+
+
+
 
     public function sendForecast($cityId)
     {
         $userId = Auth::id();
         $city = UserCity::where('id', $cityId)->where('user_id', $userId)->firstOrFail();
 
-        // Récupérer les prévisions et les formater
+        // Retrieve and format forecasts
         $forecast = $this->weatherService->getForecast($city->city);
         $formattedForecast = collect($forecast['list'])->map(function ($item) {
             return [
@@ -81,14 +91,14 @@ class CityController extends Controller
             ];
         });
 
-        // Envoyer l'email
+        // send email
         Mail::to(Auth::user()->email)->send(new WeatherForecastMail($formattedForecast, $city->city));
 
-        // Mettre à jour l'état pour activer le bouton "Annuler"
+        // Update the status to enable the "Cancel button
         $city->send_forecast = true;
         $city->save();
 
-        return redirect()->route('cities.index')->with('success', "Les prévisions météo pour {$city->city} ont été envoyées par email !");
+        return redirect()->route('cities.index')->with('success', "The weather forecast for {$city->city} were sent by email !");
     }
 
     public function scheduleForecast($cityId)
@@ -98,7 +108,7 @@ class CityController extends Controller
         $userCity->send_forecast_email_scheduled = now()->addDays(7);
         $userCity->save();
 
-        return redirect()->route('cities.index')->with('success', "Envoi des prévisions programmé pour {$userCity->city}.");
+        return redirect()->route('cities.index')->with('success', "Forecast sent scheduled for {$userCity->city}.");
     }
 
     public function cancelForecast($cityId)
@@ -108,19 +118,19 @@ class CityController extends Controller
         $userCity->send_forecast_email_scheduled = null;
         $userCity->save();
 
-        return redirect()->route('cities.index')->with('success', "L'envoi des prévisions pour {$userCity->city} a été annulé.");
+        return redirect()->route('cities.index')->with('success', "Sending forecasts for {$userCity->city} was cancelled.");
     }
 
     public function destroy($id)
     {
         $userId = Auth::id();
 
-        // Trouver la ville de l'utilisateur à supprimer
+        // Find the user’s city to delete
         $city = UserCity::where('id', $id)->where('user_id', $userId)->firstOrFail();
 
-        // Supprimer la ville
+        // Delete city
         $city->delete();
 
-        return redirect()->route('cities.index')->with('success', "La ville {$city->city} a été supprimée avec succès");
+        return redirect()->route('cities.index')->with('success', "The city {$city->city} has been removed successfully");
     }
 }

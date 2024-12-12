@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vos villes</title>
+    <title>Your cities</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -110,7 +110,7 @@
 
 <body>
     <div class="content">
-        <h1>Vos villes</h1>
+        <h1>Your cities</h1>
 
         @if (session('success'))
         <div class="success-message">{{ session('success') }}</div>
@@ -120,23 +120,46 @@
             @foreach ($userCities as $city)
             <li>
                 <span>{{ $city->city }}</span>
+
+                <!-- Indicate if the city is a favorite -->
+                @if ($city->favorite)
+                <strong>(Favorite)</strong>
+                <!-- Button to remove favorite -->
+                <form action="{{ route('cities.favorite', $city->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit">Remove Favorite</button>
+                </form>
+                @else
+                <!-- Button to mark as favorite -->
+                <form action="{{ route('cities.favorite', $city->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit">Set as Favorite</button>
+                </form>
+                @endif
+
+                <!-- Button to delete a city -->
+                <form action="{{ route('cities.destroy', $city->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit">Delete City</button>
+                </form>
                 @if ($city->send_forecast)
                 <form action="{{ route('cities.cancelForecast', $city->id) }}" method="POST">
                     @csrf
-                    <button type="submit">Annuler l'envoi</button>
+                    <button type="submit">Cancel the sending</button>
                 </form>
                 @else
                 <form action="{{ route('cities.send-forecast', $city->id) }}" method="POST">
                     @csrf
-                    <button type="submit">Envoyer les prévisions</button>
+                    <button type="submit">Send the forecast</button>
                 </form>
                 @endif
             </li>
             @endforeach
         </ul>
 
-        <a href="{{ route('cities.add') }}" class="add-city">Ajouter une nouvelle ville</a>
-        <a href="javascript:history.back()" class="back-btn">Retour</a>
+        <a href="{{ route('cities.add') }}" class="add-city">Add a new city</a>
+        <a href="javascript:history.back()" class="back-btn">Back</a>
     </div>
 </body>
 

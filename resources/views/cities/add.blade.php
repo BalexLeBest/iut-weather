@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter une ville</title>
+    <title>Add a city</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -108,7 +108,7 @@
 
 <body>
     <div class="content">
-        <h1>Ajouter une ville</h1>
+        <h1>Add a city</h1>
 
         @if ($errors->any())
         <div class="errors">
@@ -122,12 +122,12 @@
 
         <form action="{{ route('cities.store') }}" method="POST">
             @csrf
-            <label for="city">Nom de la ville:</label>
+            <label for="city">City name:</label>
             <input type="text" name="city" id="city" required>
-            <button type="submit">Ajouter</button>
+            <button type="submit">Add</button>
         </form>
 
-        <a href="{{ route('cities.index') }}" class="back-link">Retour à la liste des villes</a>
+        <a href="{{ route('cities.index') }}" class="back-link">Back to the list of cities</a>
     </div>
 </body>
 

@@ -1,7 +1,5 @@
 <?php
 
-// app/Services/WeatherService.php
-
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
@@ -37,7 +35,7 @@ class WeatherService
         return $response->json();
     }
 
-    // Nouvelle méthode pour récupérer les coordonnées
+    // New method to retrieve coordinates
     public function getCityCoordinates($city)
     {
         $response = Http::get('https://api.openweathermap.org/data/2.5/weather', [
@@ -45,7 +43,7 @@ class WeatherService
             'appid' => $this->apiKey,
         ]);
 
-        // Extraire les coordonnées depuis la réponse
+        // Extract coordinates from the response
         $data = $response->json();
 
         if (isset($data['coord'])) {
@@ -60,7 +58,7 @@ class WeatherService
 
     public function getFormattedForecast($city)
     {
-        $forecast = $this->getForecast($city); // Suppose que getForecast récupère les données brutes
+        $forecast = $this->getForecast($city); // Suppose getForecast retrieves the raw data
         return collect($forecast['list'])->map(function ($item) {
             return [
                 'date' => $item['dt_txt'],

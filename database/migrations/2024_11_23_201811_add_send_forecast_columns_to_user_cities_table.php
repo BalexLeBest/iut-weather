@@ -9,6 +9,7 @@ return new class extends Migration {
     {
         Schema::table('user_cities', function (Blueprint $table) {
             $table->boolean('send_forecast')->default(false);
+            $table->boolean('favorite')->default(false);
             $table->timestamp('send_forecast_email_scheduled')->nullable();
         });
     }

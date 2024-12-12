@@ -10,29 +10,29 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CityController;
 
 Route::middleware(['auth'])->group(function () {
-    // Afficher la liste des villes
+    // Show list of cities
     Route::get('/cities', [CityController::class, 'index'])->name('cities.index');
 
-    // Afficher le formulaire pour ajouter une ville
+    // Display the form to add a city
     Route::get('/cities/add', [CityController::class, 'create'])->name('cities.add');
 
-    // Sauvegarder la nouvelle ville
+    // Save the new city
     Route::post('/cities', [CityController::class, 'store'])->name('cities.store');
 
-    // Route pour définir une ville comme favorite
+    // Route to define a city as favorite
     Route::post('/cities/{id}/favorite', [CityController::class, 'setFavorite'])->name('cities.favorite');
 
-    // Route pour envoyer les prévisions météo par email
+    // Route to send weather forecast by email
     Route::post('/cities/{id}/send-forecast', [CityController::class, 'sendForecast'])->name('cities.send-forecast');
 
-    // Route pour supprimer une ville
+    // Route to delete a city
     Route::delete('/cities/{id}', [CityController::class, 'destroy'])->name('cities.destroy');
 
     Route::post('/cities/{id}/send-forecast', [CityController::class, 'sendForecast'])->name('cities.send-forecast');
     
     Route::post('/cities/{id}/schedule-forecast', [CityController::class, 'scheduleForecast'])->name('cities.scheduleForecast');
 
-    // Annuler l'envoi des prévisions
+    // Cancel sending of forecast
     Route::post('/cities/{id}/cancel-forecast', [CityController::class, 'cancelForecast'])->name('cities.cancelForecast');
 });
 

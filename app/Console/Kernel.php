@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
-        // Exécuter la commande chaque lundi à 6h
+        // Execute the order every Monday at 6am
         $schedule->command('forecast:send')->weeklyOn(1, '6:00');
     }
 
