@@ -101,7 +101,7 @@
         <h1>Current Weather in {{ $weather['name'] }}</h1>
         <p>Temperature: {{ $weather['main']['temp'] }} °C</p>
         <p>Weather: {{ $weather['weather'][0]['description'] }}</p>
-        <a href="{{ url()->previous() }}" class="back-button">Back</a>
+        <a href="/" class="back-button">Back</a>
     </div>
 </body>
 

@@ -8,6 +8,7 @@ use App\Services\WeatherService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Response;
 
 class CityController extends Controller
 {
@@ -71,9 +72,6 @@ class CityController extends Controller
         return redirect()->route('cities.index')->with('success', "{$city->city} is now your favorite city!");
     }
 
-
-
-
     public function sendForecast($cityId)
     {
         $userId = Auth::id();
@@ -91,8 +89,38 @@ class CityController extends Controller
             ];
         });
 
-        // send email
-        Mail::to(Auth::user()->email)->send(new WeatherForecastMail($formattedForecast, $city->city));
+        // Create CSV data
+        $csvData = [
+            ['Date', 'Temperature', 'Description', 'Wind Speed', 'Humidity']
+        ];
+        foreach ($formattedForecast as $row) {
+            $csvData[] = [
+                $row['date'],
+                $row['temperature'],
+                $row['description'],
+                $row['wind_speed'],
+                $row['humidity'],
+            ];
+        }
+
+        // Create the CSV in memory
+        $fileName = "forecast_{$city->city}.csv";
+        $handle = fopen('php://temp', 'w+');
+        foreach ($csvData as $row) {
+            fputcsv($handle, $row);
+        }
+        rewind($handle);
+
+        // Attach the CSV to the email
+        $email = new WeatherForecastMail($formattedForecast, $city->city);
+        $email->attachData(stream_get_contents($handle), $fileName, [
+            'mime' => 'text/csv',
+        ]);
+
+        // Send email
+        Mail::to(Auth::user()->email)->send($email);
+
+        fclose($handle);
 
         // Update the status to enable the "Cancel button
         $city->send_forecast = true;
@@ -132,5 +160,46 @@ class CityController extends Controller
         $city->delete();
 
         return redirect()->route('cities.index')->with('success', "The city {$city->city} has been removed successfully");
+    }
+
+    public function exportCityToCsv($cityId)
+    {
+        $userId = Auth::id();
+        $city = UserCity::where('id', $cityId)->where('user_id', $userId)->firstOrFail();
+
+        // Call the weather service to get the forecast
+        $forecastData = $this->weatherService->getForecast($city->city);
+
+        // Prepare data for CSV
+        $csvData = [
+            ['City', 'Date', 'Temperature', 'Description', 'Wind Speed', 'Humidity']
+        ];
+
+        foreach ($forecastData['list'] as $item) {
+            $csvData[] = [
+                $city->city,
+                $item['dt_txt'],
+                $item['main']['temp'],
+                $item['weather'][0]['description'],
+                $item['wind']['speed'],
+                $item['main']['humidity']
+            ];
+        }
+
+        // Create the CSV file
+        $fileName = "forecast_{$city->city}.csv";
+        $handle = fopen('php://memory', 'w');
+        foreach ($csvData as $row) {
+            fputcsv($handle, $row);
+        }
+        rewind($handle);
+
+        // Return CSV response
+        return Response::stream(function () use ($handle) {
+            fpassthru($handle);
+        }, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename={$fileName}",
+        ]);
     }
 }

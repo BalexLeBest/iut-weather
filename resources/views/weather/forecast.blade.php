@@ -135,7 +135,7 @@
             </tbody>
         </table>
         <br>
-        <a href="{{ url()->previous() }}" class="back-button">Back</a>
+        <a href="/" class="back-button">Back</a>
     </div>
 </body>
 

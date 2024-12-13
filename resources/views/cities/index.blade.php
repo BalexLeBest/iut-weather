@@ -24,7 +24,7 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
+            max-width: 900px;
             width: 90%;
         }
 
@@ -105,6 +105,35 @@
         .back-btn:hover {
             background-color: #c0392b;
         }
+
+        .download-button {
+            padding: 10px 15px;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            background-color: #1abc9c;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-button:hover {
+            background-color: #16a085;
+        }
+
+        li{
+            display: flex;
+        }
+        li>span{
+            flex-direction: start;
+        }
+
+        .info{
+            flex-direction: end;
+        }
+        
     </style>
 </head>
 
@@ -122,44 +151,46 @@
                 <span>{{ $city->city }}</span>
 
                 <!-- Indicate if the city is a favorite -->
-                @if ($city->favorite)
-                <strong>(Favorite)</strong>
-                <!-- Button to remove favorite -->
-                <form action="{{ route('cities.favorite', $city->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit">Remove Favorite</button>
-                </form>
-                @else
-                <!-- Button to mark as favorite -->
-                <form action="{{ route('cities.favorite', $city->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit">Set as Favorite</button>
-                </form>
-                @endif
+                <div id="info">
+                    @if ($city->favorite)
+                    <strong>(Favorite)</strong>
+                    <!-- Button to remove favorite -->
+                    <form action="{{ route('cities.favorite', $city->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        <button type="submit">Remove Favorite</button>
+                    </form>
+                    @else
+                    <!-- Button to mark as favorite -->
+                    <form action="{{ route('cities.favorite', $city->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        <button type="submit">Set as Favorite</button>
+                    </form>
+                    @endif
 
-                <!-- Button to delete a city -->
-                <form action="{{ route('cities.destroy', $city->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit">Delete City</button>
-                </form>
-                @if ($city->send_forecast)
-                <form action="{{ route('cities.cancelForecast', $city->id) }}" method="POST">
-                    @csrf
-                    <button type="submit">Cancel the sending</button>
-                </form>
-                @else
-                <form action="{{ route('cities.send-forecast', $city->id) }}" method="POST">
-                    @csrf
-                    <button type="submit">Send the forecast</button>
-                </form>
-                @endif
+                    <form action="{{ route('cities.destroy', $city->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit">Delete City</button>
+                    </form>
+                    @if ($city->send_forecast)
+                    <form action="{{ route('cities.cancelForecast', $city->id) }}" method="POST">
+                        @csrf
+                        <button type="submit">Cancel the sending</button>
+                    </form>
+                    @else
+                    <form action="{{ route('cities.send-forecast', $city->id) }}" method="POST">
+                        @csrf
+                        <button type="submit">Send the forecast</button>
+                    </form>
+                    @endif
+                    <a href="{{ route('cities.download', $city->id) }}" class="download-button">Download CSV</a>
+                </div>
             </li>
             @endforeach
         </ul>
 
         <a href="{{ route('cities.add') }}" class="add-city">Add a new city</a>
-        <a href="javascript:history.back()" class="back-btn">Back</a>
+        <a href="/" class="back-btn">Back</a>
     </div>
 </body>
 

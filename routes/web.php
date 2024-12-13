@@ -47,6 +47,7 @@ Route::get('/weather/coordinates', [WeatherController::class, 'coordinates'])->n
 Route::get('/weather/combined', [WeatherController::class, 'combined'])->name('weather.combined');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/weather/search', [WeatherController::class, 'search'])->name('weather.search');
+Route::get('/cities/{id}/download', [CityController::class, 'exportCityToCsv'])->name('cities.download');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
