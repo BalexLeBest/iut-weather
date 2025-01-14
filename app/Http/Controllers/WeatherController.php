@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\WeatherService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\UserCityResource;
 
 class WeatherController extends Controller
 {
@@ -108,5 +109,11 @@ class WeatherController extends Controller
 
         // Flip view with city weather data
         return view('home', compact('weather'));
+    }
+
+    public function index()
+    {
+        $cities = Auth::user()->userCities()->paginate(10);
+        return UserCityResource::collection($cities);
     }
 }

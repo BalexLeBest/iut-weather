@@ -5,24 +5,27 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::table('user_cities', function (Blueprint $table) {
-            $table->boolean('send_forecast')->default(false);
-            $table->timestamp('send_forecast_email_scheduled')->nullable();
+            if (!Schema::hasColumn('user_cities', 'send_forecast')) {
+                $table->boolean('send_forecast')->default(false);
+            }
+            if (!Schema::hasColumn('user_cities', 'send_forecast_email_scheduled')) {
+                $table->timestamp('send_forecast_email_scheduled')->nullable();
+            }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::table('user_cities', function (Blueprint $table) {
-            $table->dropColumn(['send_forecast', 'send_forecast_email_scheduled']);
+            if (Schema::hasColumn('user_cities', 'send_forecast')) {
+                $table->dropColumn('send_forecast');
+            }
+            if (Schema::hasColumn('user_cities', 'send_forecast_email_scheduled')) {
+                $table->dropColumn('send_forecast_email_scheduled');
+            }
         });
     }
 };
