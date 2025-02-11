@@ -25,7 +25,7 @@ class UserCityController extends Controller
             'city' => $request->city,
         ]);
 
-        return response()->json(['message' => 'Ville ajoutée avec succès', 'city' => $city], 201);
+        return response()->json(['message' => 'City added successfully', 'city' => $city], 201);
     }
 
     // remove a city
@@ -34,7 +34,7 @@ class UserCityController extends Controller
         $userCity = UserCity::where('city', $place)->where('user_id', Auth::id())->firstOrFail();
         $userCity->delete();
 
-        return response()->json(['message' => 'Ville supprimée avec succès']);
+        return response()->json(['message' => 'City successfully deleted']);
     }
 
     // Mark a city as favorite
@@ -50,7 +50,7 @@ class UserCityController extends Controller
         $city->favorite = true;
         $city->save();
 
-        return response()->json(['message' => "{$city->city} est maintenant votre ville favorite"]);
+        return response()->json(['message' => "{$city->city} is now your favorite city"]);
     }
 
     // Enable/disable sending of forecasts by email
