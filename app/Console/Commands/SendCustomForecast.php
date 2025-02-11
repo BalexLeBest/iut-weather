@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\Mail;
 class SendCustomForecast extends Command
 {
     /**
-     * La signature définit le nom de la commande et ses arguments/paramètres
+     * The signature defines the name of the command and its arguments/parameters
      *
-     * Dans cet exemple, on définit :
-     *   - {city} comme argument obligatoire (nom de la ville)
-     *   - {email} comme argument obligatoire (adresse email)
+     * In this example, we define:
+     *   - {city} as a mandatory argument (name of city)
+     *   - {email} as a mandatory argument (email address)
      */
     protected $signature = 'forecast:send-custom {city} {email}';
 
     /**
-     * Description de la commande (affichée avec php artisan list).
+     * Description of the command (displayed with php artisan list).
      */
     protected $description = 'Send the forecast of a given city to a given email address.';
 
@@ -32,25 +32,25 @@ class SendCustomForecast extends Command
     }
 
     /**
-     * Méthode handle() exécutée quand on lance la commande.
+     * Method handle() executed when the command is run.
      */
     public function handle()
     {
-        // 1. Récupération des arguments
+        // 1. Retrieval of arguments
         $city = $this->argument('city');
         $email = $this->argument('email');
 
-        // 2. Récupération des prévisions via le WeatherService
+        // 2. Forecast retrieval via WeatherService
         $forecastData = $this->weatherService->getForecast($city);
 
-        // Vérification basique si l’API retourne une erreur (ex: ville introuvable)
+        // Basic check if the API returns an error (ex: city not found)
         if (isset($forecastData['cod']) && $forecastData['cod'] != 200) {
             $this->error("Unable to retrieve forecast for {$city}.");
             return 1; // code d’erreur
         }
 
-        // 3. Conversion en un format exploitable pour le CSV 
-        //    (dans l’exemple, on récupère les prévisions date/température/description etc.)
+        // 3. Conversion to a format usable for CSV 
+        //    (in the example, we retrieve the forecast date/temperature/description etc.)
         $formattedForecast = collect($forecastData['list'])->map(function ($item) {
             return [
                 'date' => $item['dt_txt'],
@@ -61,7 +61,7 @@ class SendCustomForecast extends Command
             ];
         });
 
-        // 4. Création d’un CSV "en mémoire"
+        // 4. Creation of a CSV "in memory
         $csvData = [
             ['Date', 'Temperature', 'Description', 'Wind Speed', 'Humidity']
         ];
@@ -76,33 +76,33 @@ class SendCustomForecast extends Command
             ];
         }
 
-        // Ouverture d’un flux mémoire
+        // Opening a memory stream
         $handle = fopen('php://temp', 'w+');
-        // Ecriture du CSV
+        // Writing the CSV
         foreach ($csvData as $fields) {
             fputcsv($handle, $fields);
         }
-        rewind($handle); // on se replace au début pour pouvoir le relire
+        rewind($handle); // we replace at the beginning to be able to read it again
 
-        // 5. Construction du mail, en utilisant votre Mailable existant WeatherForecastMail
-        //    (ou un autre Mailable si vous préférez)
+        // 5. Building the mail, using your existing WeatherForecastMail mailable
+        //    (or other mailable if you prefer)
         $emailMailable = new WeatherForecastMail($formattedForecast, $city);
 
-        // On attache le CSV directement via attachData() en lui passant le flux
+        // On attach le CSV directement via attachData() en lui passant le flux
         $emailMailable->attachData(
             stream_get_contents($handle), 
-            "forecast_{$city}.csv", // nom du fichier
+            "forecast_{$city}.csv", // file name
             ['mime' => 'text/csv']
         );
 
-        fclose($handle); // on peut fermer le flux
+        fclose($handle); // we can close the flow
 
-        // 6. Envoi du mail via Mail::to()
+        // 6. Sending the mail via Mail::to()
         Mail::to($email)->send($emailMailable);
 
-        // 7. Message de fin dans la console
+        // 7. End message in console
         $this->info("Forecast for {$city} has been sent to {$email} successfully.");
 
-        return 0; // tout s’est bien passé
+        return 0; // everything went well
     }
 }
