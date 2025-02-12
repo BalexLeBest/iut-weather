@@ -50,7 +50,6 @@ class SendCustomForecast extends Command
         }
 
         // 3. Conversion to a format usable for CSV 
-        //    (in the example, we retrieve the forecast date/temperature/description etc.)
         $formattedForecast = collect($forecastData['list'])->map(function ($item) {
             return [
                 'date' => $item['dt_txt'],
@@ -85,7 +84,6 @@ class SendCustomForecast extends Command
         rewind($handle); // we replace at the beginning to be able to read it again
 
         // 5. Building the mail, using your existing WeatherForecastMail mailable
-        //    (or other mailable if you prefer)
         $emailMailable = new WeatherForecastMail($formattedForecast, $city);
 
         // On attach le CSV directement via attachData() en lui passant le flux
